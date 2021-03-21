@@ -1,0 +1,20 @@
+#frequency {
+    width: 50%;
+}
+
+#frequencySamp {
+    width: 50%;
+}
+
+#play_pause {
+    width: 60px;
+}
+
+#play_pause_samp {
+    width: 60px;
+}
+
+#dlNotes {
+    display: list-item;
+    font-size: 7px;
+}
