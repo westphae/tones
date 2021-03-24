@@ -1,66 +1,78 @@
 let a2 = 110.0,
-	notes = ["A", "A#", "B", "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#"],
-	sampleIsPlaying = false,
-	sampleBuffer = null,
-	sampleSource1 = null,
-	sampleSource2 = null,
-	sampleGainNode = ctx.createGain(),
-    freqControlSamp = document.querySelector('#frequencySamp'),
-    freqDisplaySamp = document.querySelector('#freqSamp'),
-	playButtonSamp = document.querySelector("#play_pause_samp"),
-	dlNotes = document.createElement("datalist");
+    e3 = 164.81377845643496,
+	notes = ["A", "A#", "B", "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#"];
 
-dlNotes.id = "dlNotes";
-for (i=0; i<=24; i++) {
-	let option = document.createElement("option");
-	option.value = Math.round(a2*2**((i-12)/12));
-	option.label = notes[i%12];
-	dlNotes.appendChild(option);
-}
-freqControlSamp.appendChild(dlNotes);
-// document.querySelector("body").appendChild(dlNotes);
-freqControlSamp.setAttribute("list", "dlNotes");
-
-sampleGainNode.connect(ctx.destination);
-sampleGainNode.gain.value = 0;
-
-freqControlSamp.addEventListener('input', function() {
-    sampleSource2.playbackRate.value = this.value / a2;
-    freqDisplaySamp.innerHTML = this.value;
-}, false);
-
-freqDisplaySamp.innerHTML = a2;
-
-async function setUpSampleLoop(filepath) {
+async function SetUpSampleLoop(ctx, filepath) {
 	const response = await fetch(filepath);
 	const arrayBuffer = await response.arrayBuffer();
-	sampleBuffer = await ctx.decodeAudioData(arrayBuffer);
-	sampleSource1 = ctx.createBufferSource();
-	sampleSource1.buffer = sampleBuffer;
-	sampleSource1.loop = true;
-	sampleSource1.connect(sampleGainNode);
-	sampleSource1.start(ctx.currentTime);
-	sampleSource2 = ctx.createBufferSource();
-	sampleSource2.buffer = sampleBuffer;
-	sampleSource2.loop = true;
-	sampleSource2.connect(sampleGainNode);
-	sampleSource2.start(ctx.currentTime);
+	const sampleBuffer = await ctx.decodeAudioData(arrayBuffer);
+    return sampleBuffer
 }
 
-function playSamp() {
-	sampleIsPlaying = !sampleIsPlaying;
-	// check if context is in suspended state (autoplay policy)
-	if (ctx.state === 'suspended') {
-		ctx.resume();
-	}
+function SamplePlayer(destId, ctx, SampleBuffer, baseFreq) {
+	this.IsPlaying = false;
 
-	if (sampleIsPlaying) {
-		sampleGainNode.gain.value = 2;
-		playButtonSamp.innerHTML = "Pause";
-	} else {
-		sampleGainNode.gain.value = 0;
-		playButtonSamp.innerHTML = "Play";
-	}
+	this.GainNode = ctx.createGain(),
+    this.GainNode.connect(ctx.destination);
+    this.GainNode.gain.value = 0;
+
+	this.SourceNode = ctx.createBufferSource();
+	this.SourceNode.buffer = SampleBuffer;
+    this.SourceNode.playbackRate.value = baseFreq/e3; // sample recorded is an e3
+	this.SourceNode.loop = true;
+	this.SourceNode.connect(this.GainNode);
+	this.SourceNode.start(ctx.currentTime);
+
+    this.Dest = document.querySelector("#"+destId);
+
+	this.PlayButton = document.createElement("button");
+    this.PlayButton.setAttribute("type", "button");
+    this.PlayButton.classList.add("play_pause");
+    this.PlayButton.innerText = "Play"
+    this.PlayButton.addEventListener("click", () => {this.PlaySample()});
+	this.Dest.appendChild(this.PlayButton);
+
+	dlNotes = document.createElement("datalist");
+    dlNotes.id = "dlNotes";
+    for (i=0; i<=24; i++) {
+    	let option = document.createElement("option");
+	    option.value = Math.round(baseFreq*2**((i-12)/12));
+	    option.label = notes[i%12];
+	    dlNotes.appendChild(option);
+    }
+
+    this.FreqControl = document.createElement("input");
+    this.FreqControl.classList.add("frequency_range");
+    this.FreqControl.setAttribute("type", "range");
+    this.FreqControl.setAttribute("min", baseFreq/2);
+    this.FreqControl.setAttribute("max", baseFreq*2);
+    this.FreqControl.setAttribute("value", baseFreq);
+    this.FreqControl.setAttribute("step", 0.1);
+    this.FreqControl.appendChild(dlNotes);
+    this.FreqControl.setAttribute("list", "dlNotes");
+    this.FreqControl.addEventListener("input", () => {
+        this.SourceNode.playbackRate.value = this.FreqControl.value/e3;
+        this.FreqDisplay.innerHTML = this.FreqControl.value;
+    });
+	this.Dest.appendChild(this.FreqControl);
+
+    this.FreqDisplay = document.createElement("span");
+    this.FreqDisplay.innerHTML = baseFreq;
+	this.Dest.appendChild(this.FreqDisplay);
+
+    this.PlaySample = function() {
+        this.IsPlaying = !this.IsPlaying;
+        // check if context is in suspended state (autoplay policy)
+        if (ctx.state === "suspended") {
+            ctx.resume();
+        }
+
+        if (this.IsPlaying) {
+            this.GainNode.gain.value = 4;
+            this.PlayButton.innerHTML = "Pause";
+        } else {
+            this.GainNode.gain.value = 0;
+            this.PlayButton.innerHTML = "Play";
+        }
+    }
 }
-
-setUpSampleLoop("res/slide_whistle.wav");

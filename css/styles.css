@@ -2,11 +2,11 @@
     width: 50%;
 }
 
-#frequencySamp {
+.frequency_range {
     width: 50%;
 }
 
-#play_pause {
+.play_pause {
     width: 60px;
 }
 
