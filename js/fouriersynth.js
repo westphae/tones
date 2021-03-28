@@ -44,11 +44,25 @@ function FourierPlayer(destId, ctx, baseFreq, fft) {
         this.SourceNode.frequency.value = this.FreqControl.value;
         this.FreqDisplay.innerHTML = Number.parseFloat(this.FreqControl.value).toFixed(1);
     });
+    this.FreqControl.addEventListener("mousedown", () => {
+        if (this.IsPlaying && !this.SlideCheck.checked) {
+            this.GainNode.gain.value = 0;
+        };
+    });
+    this.FreqControl.addEventListener("mouseup", () => {
+        if (this.IsPlaying && !this.SlideCheck.checked) {
+            this.GainNode.gain.value = this.Volume;
+        };
+    });
 	this.Dest.appendChild(this.FreqControl);
 
     this.FreqDisplay = document.createElement("span");
     this.FreqDisplay.innerHTML = Number.parseFloat(baseFreq).toFixed(1);
 	this.Dest.appendChild(this.FreqDisplay);
+
+    this.SlideCheck = document.createElement("input");
+    this.SlideCheck.setAttribute("type", "checkbox");
+	this.Dest.appendChild(this.SlideCheck);
 
     this.VolumeControl = document.createElement("input");
     this.VolumeControl.classList.add("volume_range");

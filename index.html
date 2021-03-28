@@ -14,6 +14,7 @@
 	<h1>Constructing Musical Scales</h1>
     <div id="fourier1"></div>
     <div id="fourier2"></div>
+    <div id="fourier3"></div>
     <div id="synth1"></div>
     <div id="synth2"></div>
     <div id="synth3"></div>
@@ -32,6 +33,7 @@
                 SampleBuffer = s;
                 new FourierPlayer("fourier1", ctx, 110, new Float32Array([0,0.4,0.4,1,1,1,0.3,0.7,0.6,0.5,0.9,0.8]));
                 new FourierPlayer("fourier2", ctx, 110, new Float32Array([0,0.4,0.4,1,1,1,0.3,0.7,0.6,0.5,0.9,0.8]));
+                new FourierPlayer("fourier3", ctx, 110, new Float32Array([0,0.4,0.4,1,1,1,0.3,0.7,0.6,0.5,0.9,0.8]));
                 new SynthPlayer("synth1", ctx, 110);
                 new SynthPlayer("synth2", ctx, 110);
                 new SynthPlayer("synth3", ctx, 110);
