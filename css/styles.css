@@ -6,6 +6,15 @@
     width: 50%;
 }
 
+.frequency_display {
+    display: inline-block;
+    width: 35px;
+}
+
+.volume_range {
+    width: 20%;
+}
+
 .play_pause {
     width: 60px;
 }
