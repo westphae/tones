@@ -21,24 +21,45 @@
     <div id="sample1"></div>
     <div id="sample2"></div>
     <div id="sample3"></div>
-	<script src="js/fouriersynth.js"></script>
-	<script src="js/synth.js"></script>
-	<script src="js/sample.js"></script>
+	<script src="js/player.js"></script>
     <script>
-            window.AudioContext = window.AudioContext || window.webkitAudioContext;
-            let ctx = new AudioContext();
+        window.AudioContext = window.AudioContext || window.webkitAudioContext;
+        let ctx = new AudioContext(),
+            baseFreq = 110.0, // a2
+            sampleFilename = "res/slide_whistle.wav",
+            sampleBaseFreq = 164.81377845643496, // e3
+            fourierArray = new Float32Array([0,0.4,0.4,1,1,1,0.3,0.7,0.6,0.5,0.9,0.8]);
 
-            SetUpSampleLoop(ctx, "res/slide_whistle.wav").then((SampleBuffer) => {
-                new FourierPlayer("fourier1", ctx, 110, new Float32Array([0,0.4,0.4,1,1,1,0.3,0.7,0.6,0.5,0.9,0.8]));
-                new FourierPlayer("fourier2", ctx, 110, new Float32Array([0,0.4,0.4,1,1,1,0.3,0.7,0.6,0.5,0.9,0.8]));
-                new FourierPlayer("fourier3", ctx, 110, new Float32Array([0,0.4,0.4,1,1,1,0.3,0.7,0.6,0.5,0.9,0.8]));
-                new SynthPlayer("synth1", ctx, 110);
-                new SynthPlayer("synth2", ctx, 110);
-                new SynthPlayer("synth3", ctx, 110);
-                new SamplePlayer("sample1", ctx, 110, SampleBuffer);
-                new SamplePlayer("sample2", ctx, 110, SampleBuffer);
-                new SamplePlayer("sample3", ctx, 110, SampleBuffer);
-            });
+        SetUpSampleLoop(ctx, sampleFilename).then((SampleBuffer) => {
+            let sampleSourceNode =
+            new Player("sample1", ctx, baseFreq,
+                SampleSourceNode(SampleBuffer, sampleBaseFreq, baseFreq)
+            );
+            new Player("sample2", ctx, baseFreq,
+                SampleSourceNode(SampleBuffer, sampleBaseFreq, baseFreq)
+            );
+            new Player("sample3", ctx, baseFreq,
+                SampleSourceNode(SampleBuffer, sampleBaseFreq, baseFreq)
+            );
+        });
+        new Player("fourier1", ctx, baseFreq,
+            FourierSourceNode(baseFreq, fourierArray)
+        );
+        new Player("fourier2", ctx, baseFreq,
+            FourierSourceNode(baseFreq, fourierArray)
+        );
+        new Player("fourier3", ctx, baseFreq,
+            FourierSourceNode(baseFreq, fourierArray)
+        );
+        new Player("synth1", ctx, baseFreq,
+            SynthSourceNode(baseFreq, "sine")
+        );
+        new Player("synth2", ctx, baseFreq,
+            SynthSourceNode(baseFreq, "sine")
+        );
+        new Player("synth3", ctx, baseFreq,
+            SynthSourceNode(baseFreq, "sine")
+        );
     </script>
 
 </body>

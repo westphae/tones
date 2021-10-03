@@ -1,4 +1,6 @@
-function FourierPlayer(destId, ctx, baseFreq, fft) {
+let notes = ["A", "A#", "B", "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#"];
+
+function Player(destId, ctx, baseFreq, SourceNode) {
 	this.IsPlaying = false;
     this.Volume = 1;
 
@@ -6,12 +8,10 @@ function FourierPlayer(destId, ctx, baseFreq, fft) {
     this.GainNode.connect(ctx.destination);
     this.GainNode.gain.value = 0;
 
-    let FFTTable = ctx.createPeriodicWave(fft, new Float32Array(fft.length));
-	this.SourceNode = ctx.createOscillator();
-    this.SourceNode.setPeriodicWave(FFTTable);
-    this.SourceNode.frequency.value = 110;
+	this.SourceNode = SourceNode;
 	this.SourceNode.connect(this.GainNode);
 	this.SourceNode.start(ctx.currentTime);
+    this.SourceNode.SetFreq(baseFreq);
 
     this.Dest = document.querySelector("#"+destId);
 
@@ -26,7 +26,7 @@ function FourierPlayer(destId, ctx, baseFreq, fft) {
     dlNotes.id = "dlNotes";
     for (let i=0; i<=24; i++) {
     	let option = document.createElement("option");
-	    option.value = Math.round(baseFreq*2**((i-12)/12));
+	    option.value = Math.round(baseFreq*2**((i-12)/12)).toString();
 	    option.label = notes[i%12];
 	    dlNotes.appendChild(option);
     }
@@ -34,14 +34,14 @@ function FourierPlayer(destId, ctx, baseFreq, fft) {
     this.FreqControl = document.createElement("input");
     this.FreqControl.classList.add("frequency_range");
     this.FreqControl.setAttribute("type", "range");
-    this.FreqControl.setAttribute("min", baseFreq/2);
-    this.FreqControl.setAttribute("max", baseFreq*2);
-    this.FreqControl.setAttribute("value", baseFreq);
-    this.FreqControl.setAttribute("step", 0.1);
+    this.FreqControl.setAttribute("min", (baseFreq/2).toString());
+    this.FreqControl.setAttribute("max", (baseFreq*2).toString());
+    this.FreqControl.setAttribute("value", baseFreq.toString());
+    this.FreqControl.setAttribute("step", "0.1");
     this.FreqControl.appendChild(dlNotes);
     this.FreqControl.setAttribute("list", "dlNotes");
     this.FreqControl.addEventListener("input", () => {
-        this.SourceNode.frequency.value = this.FreqControl.value;
+        this.SourceNode.SetFreq(this.FreqControl.value)
         this.FreqDisplay.innerHTML = Number.parseFloat(this.FreqControl.value).toFixed(1);
     });
     this.FreqControl.addEventListener("mousedown", () => {
@@ -68,10 +68,10 @@ function FourierPlayer(destId, ctx, baseFreq, fft) {
     this.VolumeControl = document.createElement("input");
     this.VolumeControl.classList.add("volume_range");
     this.VolumeControl.setAttribute("type", "range");
-    this.VolumeControl.setAttribute("min", 0);
-    this.VolumeControl.setAttribute("max", 4);
-    this.VolumeControl.setAttribute("value", 1);
-    this.VolumeControl.setAttribute("step", 0.1);
+    this.VolumeControl.setAttribute("min", "0");
+    this.VolumeControl.setAttribute("max", "4");
+    this.VolumeControl.setAttribute("value", "1");
+    this.VolumeControl.setAttribute("step", "0.1");
     this.VolumeControl.addEventListener("input", () => {
         this.Volume = this.VolumeControl.value;
         this.GainNode.gain.value = this.Volume;
@@ -93,4 +93,40 @@ function FourierPlayer(destId, ctx, baseFreq, fft) {
             this.PlayButton.innerHTML = "Play";
         }
     }
+}
+
+async function SetUpSampleLoop(ctx, filepath) {
+    let response = await fetch(filepath);
+    let arrayBuffer = await response.arrayBuffer();
+    return await ctx.decodeAudioData(arrayBuffer);
+}
+
+function SampleSourceNode(SampleBuffer, SampleFreq, BaseFreq) {
+    let sourceNode = ctx.createBufferSource();
+    sourceNode.buffer = SampleBuffer;
+    sourceNode.playbackRate.value = BaseFreq / SampleFreq;
+    sourceNode.loop = true;
+    sourceNode.SetFreq = function(freq) {
+        sourceNode.playbackRate.value = freq/sampleBaseFreq;
+    }
+    return sourceNode
+}
+
+function SynthSourceNode(BaseFreq, Type) {
+    let sourceNode = ctx.createOscillator();
+    sourceNode.type = Type;
+    sourceNode.SetFreq = function(freq) {
+        sourceNode.frequency.value = freq;
+    }
+    return sourceNode
+}
+
+function FourierSourceNode(BaseFreq, fft) {
+    let FFTTable = ctx.createPeriodicWave(fft, new Float32Array(fft.length));
+    let sourceNode = ctx.createOscillator();
+    sourceNode.setPeriodicWave(FFTTable);
+    sourceNode.SetFreq = function(freq) {
+        sourceNode.frequency.value = freq;
+    }
+    return sourceNode
 }
