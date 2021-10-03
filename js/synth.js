@@ -2,7 +2,7 @@ function SynthPlayer(destId, ctx, baseFreq) {
 	this.IsPlaying = false;
     this.Volume = 1;
 
-	this.GainNode = ctx.createGain(),
+	this.GainNode = ctx.createGain();
     this.GainNode.connect(ctx.destination);
     this.GainNode.gain.value = 0;
 
@@ -21,9 +21,9 @@ function SynthPlayer(destId, ctx, baseFreq) {
     this.PlayButton.addEventListener("click", () => {this.PlaySample()});
 	this.Dest.appendChild(this.PlayButton);
 
-	dlNotes = document.createElement("datalist");
+    let dlNotes = document.createElement("datalist");
     dlNotes.id = "dlNotes";
-    for (i=0; i<=24; i++) {
+    for (let i=0; i<=24; i++) {
     	let option = document.createElement("option");
 	    option.value = Math.round(baseFreq*2**((i-12)/12));
 	    option.label = notes[i%12];
@@ -46,16 +46,17 @@ function SynthPlayer(destId, ctx, baseFreq) {
     this.FreqControl.addEventListener("mousedown", () => {
         if (this.IsPlaying && !this.SlideCheck.checked) {
             this.GainNode.gain.value = 0;
-        };
+        }
     });
     this.FreqControl.addEventListener("mouseup", () => {
         if (this.IsPlaying && !this.SlideCheck.checked) {
             this.GainNode.gain.value = this.Volume;
-        };
+        }
     });
 	this.Dest.appendChild(this.FreqControl);
 
     this.FreqDisplay = document.createElement("span");
+    this.FreqDisplay.classList.add("frequency_display");
     this.FreqDisplay.innerHTML = Number.parseFloat(baseFreq).toFixed(1);
 	this.Dest.appendChild(this.FreqDisplay);
 

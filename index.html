@@ -26,20 +26,18 @@
 	<script src="js/sample.js"></script>
     <script>
             window.AudioContext = window.AudioContext || window.webkitAudioContext;
-            let ctx = new AudioContext(),
-                SampleBuffer = null;
+            let ctx = new AudioContext();
 
-            SetUpSampleLoop(ctx, "res/slide_whistle.wav").then((s) => {
-                SampleBuffer = s;
+            SetUpSampleLoop(ctx, "res/slide_whistle.wav").then((SampleBuffer) => {
                 new FourierPlayer("fourier1", ctx, 110, new Float32Array([0,0.4,0.4,1,1,1,0.3,0.7,0.6,0.5,0.9,0.8]));
                 new FourierPlayer("fourier2", ctx, 110, new Float32Array([0,0.4,0.4,1,1,1,0.3,0.7,0.6,0.5,0.9,0.8]));
                 new FourierPlayer("fourier3", ctx, 110, new Float32Array([0,0.4,0.4,1,1,1,0.3,0.7,0.6,0.5,0.9,0.8]));
                 new SynthPlayer("synth1", ctx, 110);
                 new SynthPlayer("synth2", ctx, 110);
                 new SynthPlayer("synth3", ctx, 110);
-                new SamplePlayer("sample1", ctx, SampleBuffer, 110);
-                new SamplePlayer("sample2", ctx, SampleBuffer, 110);
-                new SamplePlayer("sample3", ctx, SampleBuffer, 110);
+                new SamplePlayer("sample1", ctx, 110, SampleBuffer);
+                new SamplePlayer("sample2", ctx, 110, SampleBuffer);
+                new SamplePlayer("sample3", ctx, 110, SampleBuffer);
             });
     </script>
 
