@@ -47,6 +47,9 @@ function Interval(destId, ctx, baseFreq, duration, SourceNode1, SourceNode2) {
         el.setAttribute("name", "ascdesc")
         el.setAttribute("value", i)
         el.classList.add("ascdesc_"+destId)
+        if (i == "Asc") {
+            el.checked = true;
+        }
 
         ll = document.createElement("label")
         ll.setAttribute("htmlFor", i)
@@ -58,7 +61,6 @@ function Interval(destId, ctx, baseFreq, duration, SourceNode1, SourceNode2) {
         sl.appendChild(ll)
         AscDiv.appendChild(sl)
     }
-    el.checked = true;
 
     let interval_names = ["m2", "M2", "m3", "M3", "P4", "TT", "P5", "m6", "M6", "m7", "M7", "P8"],
         major_intervals = document.createElement("div"),
@@ -72,6 +74,10 @@ function Interval(destId, ctx, baseFreq, duration, SourceNode1, SourceNode2) {
         el.setAttribute("name", "interval")
         el.setAttribute("value", i)
         el.classList.add("interval_"+destId)
+        if (i == "P5") {
+            console.log(i)
+            el.checked = true;
+        }
 
         ll = document.createElement("label")
         ll.setAttribute("htmlFor", i)
@@ -93,7 +99,6 @@ function Interval(destId, ctx, baseFreq, duration, SourceNode1, SourceNode2) {
                 break;
         }
     }
-    el.checked = true;
 
     this.PlayButton = document.createElement("button");
     this.PlayButton.setAttribute("type", "button");
