@@ -18,27 +18,35 @@ function Interval(destId, ctx, baseFreq, duration, SourceNode1, SourceNode2) {
     this.Dest = document.querySelector("#" + destId);
 
     let JIDiv = document.createElement("div"),
-        JILabel = document.createElement("label"),
-        JISlider = document.createElement("label"),
-        JISpan = document.createElement("span");
-    this.JICheckbox = document.createElement("input");
-    JIDiv.appendChild(JILabel)
-    JIDiv.appendChild(JISlider)
-    JISlider.appendChild(this.JICheckbox)
-    JISlider.appendChild(JISpan)
-    JILabel.setAttribute("for", "jislider")
-    JILabel.innerText = "ET JI";
-    JISlider.setAttribute("id", "jislider")
-    JISlider.classList.add("switch");
-    this.JICheckbox.setAttribute("type", "checkbox");
-    this.JICheckbox.checked = false;
-    JISpan.classList.add("slider");
-
-    let AscDiv = document.createElement("div"),
-        ascdesc_names = ["Desc", "Asc", "Harmonic"],
+        jiet_names = ["JI", "ET"],
         el = null,
         ll = null,
         sl = null;
+
+    for (let i of jiet_names) {
+        el = document.createElement("input");
+        el.setAttribute("type", "radio")
+        el.setAttribute("id", i)
+        el.setAttribute("name", "jiet")
+        el.setAttribute("value", i)
+        el.classList.add("jiet_"+destId)
+        if (i == "ET") {
+            el.checked = true;
+        }
+
+        ll = document.createElement("label")
+        ll.setAttribute("htmlFor", i)
+        ll.innerText = i;
+
+        sl = document.createElement("span")
+        sl.classList.add("jiet")
+        sl.appendChild(el)
+        sl.appendChild(ll)
+        JIDiv.appendChild(sl)
+    }
+
+    let AscDiv = document.createElement("div"),
+        ascdesc_names = ["Desc", "Asc", "Harmonic"];
 
     for (let i of ascdesc_names) {
         el = document.createElement("input");
@@ -63,6 +71,7 @@ function Interval(destId, ctx, baseFreq, duration, SourceNode1, SourceNode2) {
     }
 
     let interval_names = ["m2", "M2", "m3", "M3", "P4", "TT", "P5", "m6", "M6", "m7", "M7", "P8"],
+        interval_ratios = [25/24, 9/8, 6/5, 5/4, 4/3, 45/32, 3/2, 8/5, 5/3, 9/5, 15/8, 2],
         major_intervals = document.createElement("div"),
         minor_intervals = document.createElement("div"),
         perfect_intervals = document.createElement("div");
@@ -75,7 +84,6 @@ function Interval(destId, ctx, baseFreq, duration, SourceNode1, SourceNode2) {
         el.setAttribute("value", i)
         el.classList.add("interval_"+destId)
         if (i == "P5") {
-            console.log(i)
             el.checked = true;
         }
 
@@ -125,18 +133,17 @@ function Interval(destId, ctx, baseFreq, duration, SourceNode1, SourceNode2) {
 
         let i2 = 2.0,
             t2 = 1.0,
-            isel = interval_names.indexOf(document.querySelector(".interval_"+destId+":checked").value),
+            tsel = document.querySelector(".jiet_"+destId+":checked").value,
             asel = document.querySelector(".ascdesc_"+destId+":checked").value,
+            isel = interval_names.indexOf(document.querySelector(".interval_"+destId+":checked").value),
             now;
-        if (this.JICheckbox.checked) {
-            for (let n=0; n%12!=(isel+1)%12; n+=7) {
-                i2 *= 1.5;
-                if (i2>2) {
-                    i2 /= 2;
-                }
-            }
-        } else {
-            i2 = 2**((isel+1)/12);
+        switch (tsel) {
+            case "JI":
+                i2 = interval_ratios[isel];
+                break;
+            case "ET":
+                i2 = 2**((isel+1)/12);
+                break;
         }
         switch (asel) {
             case "Asc":
@@ -183,15 +190,9 @@ function Interval(destId, ctx, baseFreq, duration, SourceNode1, SourceNode2) {
         this.SourceNode1.SetFreq(baseFreq);
         this.SourceNode2.SetFreq(baseFreq);
         let isel = interval_names.indexOf(document.querySelector(".interval_"+destId+":checked").value),
-            i1 = 2.0,
+            i1 = interval_ratios[isel],
             i2 = 2**((isel+1)/12),
             now;
-        for (let n=0; n%12!=(isel+1)%12; n+=7) {
-            i1 *= 1.5;
-            if (i1>2) {
-                i1 /= 2;
-            }
-        }
         p1Div.innerText = (i1*baseFreq).toFixed(1).toString() + "Hz";
         p2Div.innerText = (i2*baseFreq).toFixed(1).toString() + "Hz";
 
