@@ -21,11 +21,14 @@
     <div id="sample1"></div>
     <div id="sample2"></div>
     <div id="sample3"></div>
+    <h1>Intervals: Equal Temperament vs Just Intonation</h1>
+    <div id="interval"></div>
 	<script src="js/player.js"></script>
+    <script src="js/interval.js"></script>
     <script>
         window.AudioContext = window.AudioContext || window.webkitAudioContext;
         let ctx = new AudioContext(),
-            baseFreq = 110.0, // a2
+            baseFreq = 220.0, // a2
             sampleFilename = "res/slide_whistle.wav",
             sampleBaseFreq = 164.81377845643496, // e3
             fourierArray = new Float32Array([0,0.4,0.4,1,1,1,0.3,0.7,0.6,0.5,0.9,0.8]);
@@ -40,6 +43,10 @@
             );
             new Player("sample3", ctx, baseFreq,
                 SampleSourceNode(SampleBuffer, sampleBaseFreq, baseFreq)
+            );
+            new Interval("interval", ctx, baseFreq, 2,
+                SampleSourceNode(SampleBuffer, sampleBaseFreq, baseFreq),
+                SampleSourceNode(SampleBuffer, sampleBaseFreq, baseFreq),
             );
         });
         new Player("fourier1", ctx, baseFreq,
@@ -61,6 +68,5 @@
             SynthSourceNode(baseFreq, "sine")
         );
     </script>
-
 </body>
 </html>

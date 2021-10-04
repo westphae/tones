@@ -1,21 +1,21 @@
 let notes = ["A", "A#", "B", "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#"];
 
 function Player(destId, ctx, baseFreq, SourceNode) {
-	this.IsPlaying = false;
+    this.IsPlaying = false;
     this.Volume = 1;
 
-	this.GainNode = ctx.createGain();
+    this.GainNode = ctx.createGain();
     this.GainNode.connect(ctx.destination);
     this.GainNode.gain.value = 0;
 
-	this.SourceNode = SourceNode;
-	this.SourceNode.connect(this.GainNode);
-	this.SourceNode.start(ctx.currentTime);
+    this.SourceNode = SourceNode;
+    this.SourceNode.connect(this.GainNode);
+    this.SourceNode.start(ctx.currentTime);
     this.SourceNode.SetFreq(baseFreq);
 
     this.Dest = document.querySelector("#"+destId);
 
-	this.PlayButton = document.createElement("button");
+    this.PlayButton = document.createElement("button");
     this.PlayButton.setAttribute("type", "button");
     this.PlayButton.classList.add("play_pause");
     this.PlayButton.innerText = "Play"
@@ -59,11 +59,12 @@ function Player(destId, ctx, baseFreq, SourceNode) {
     this.FreqDisplay = document.createElement("span");
     this.FreqDisplay.classList.add("frequency_display");
     this.FreqDisplay.innerHTML = Number.parseFloat(baseFreq).toFixed(1);
-	this.Dest.appendChild(this.FreqDisplay);
+    this.Dest.appendChild(this.FreqDisplay);
 
     this.SlideCheck = document.createElement("input");
     this.SlideCheck.setAttribute("type", "checkbox");
-	this.Dest.appendChild(this.SlideCheck);
+    this.SlideCheck.checked = true;
+    this.Dest.appendChild(this.SlideCheck);
 
     this.VolumeControl = document.createElement("input");
     this.VolumeControl.classList.add("volume_range");
@@ -76,7 +77,7 @@ function Player(destId, ctx, baseFreq, SourceNode) {
         this.Volume = this.VolumeControl.value;
         this.GainNode.gain.value = this.Volume;
     });
-	this.Dest.appendChild(this.VolumeControl);
+    this.Dest.appendChild(this.VolumeControl);
 
     this.PlaySample = function() {
         this.IsPlaying = !this.IsPlaying;
