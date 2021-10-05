@@ -1,21 +1,21 @@
 function Interval(destId, ctx, baseFreq, duration, SourceNode1, SourceNode2) {
-    gainNode1 = ctx.createGain();
+    let gainNode1 = ctx.createGain();
     gainNode1.connect(ctx.destination);
     gainNode1.gain.value = 0;
 
-    gainNode2 = ctx.createGain();
+    let gainNode2 = ctx.createGain();
     gainNode2.connect(ctx.destination);
     gainNode2.gain.value = 0;
 
-    sourceNode1 = SourceNode1;
+    let sourceNode1 = SourceNode1;
     sourceNode1.connect(gainNode1);
     sourceNode1.start(ctx.currentTime);
 
-    sourceNode2 = SourceNode2;
+    let sourceNode2 = SourceNode2;
     sourceNode2.connect(gainNode2);
     sourceNode2.start(ctx.currentTime);
 
-    dest = document.querySelector("#" + destId);
+    let dest = document.querySelector("#" + destId);
 
     let JIDiv = document.createElement("div"),
         jiet_names = ["JI", "ET"],
@@ -30,7 +30,7 @@ function Interval(destId, ctx, baseFreq, duration, SourceNode1, SourceNode2) {
         el.setAttribute("name", "jiet")
         el.setAttribute("value", i)
         el.classList.add("jiet_"+destId)
-        if (i == "ET") {
+        if (i === "ET") {
             el.checked = true;
         }
 
@@ -55,7 +55,7 @@ function Interval(destId, ctx, baseFreq, duration, SourceNode1, SourceNode2) {
         el.setAttribute("name", "ascdesc")
         el.setAttribute("value", i)
         el.classList.add("ascdesc_"+destId)
-        if (i == "Asc") {
+        if (i === "Asc") {
             el.checked = true;
         }
 
@@ -83,7 +83,7 @@ function Interval(destId, ctx, baseFreq, duration, SourceNode1, SourceNode2) {
         el.setAttribute("name", "interval")
         el.setAttribute("value", i)
         el.classList.add("interval_"+destId)
-        if (i == "P5") {
+        if (i === "P5") {
             el.checked = true;
         }
 
@@ -108,7 +108,7 @@ function Interval(destId, ctx, baseFreq, duration, SourceNode1, SourceNode2) {
         }
     }
 
-    playButton = document.createElement("button");
+    let playButton = document.createElement("button");
     playButton.setAttribute("type", "button");
     playButton.classList.add("play_pause");
     playButton.innerText = "Play"
@@ -125,7 +125,7 @@ function Interval(destId, ctx, baseFreq, duration, SourceNode1, SourceNode2) {
     p1Div.classList.add("disp");
     p2Div.classList.add("disp");
 
-    playSample = function() {
+    let playSample = function() {
         // check if context is in suspended state (autoplay policy)
         if (ctx.state === "suspended") {
             ctx.resume();
@@ -173,7 +173,7 @@ function Interval(destId, ctx, baseFreq, duration, SourceNode1, SourceNode2) {
         }, t2*1000*duration)
     }
 
-    compareButton = document.createElement("button");
+    let compareButton = document.createElement("button");
     compareButton.setAttribute("type", "button");
     compareButton.classList.add("compare");
     compareButton.innerText = "Compare"
@@ -181,7 +181,7 @@ function Interval(destId, ctx, baseFreq, duration, SourceNode1, SourceNode2) {
         compareSample()
     });
 
-    compareSample = function() {
+    let compareSample = function() {
         // check if context is in suspended state (autoplay policy)
         if (ctx.state === "suspended") {
             ctx.resume();
