@@ -1,21 +1,21 @@
 function Interval(destId, ctx, baseFreq, duration, SourceNode1, SourceNode2) {
-    this.GainNode1 = ctx.createGain();
-    this.GainNode1.connect(ctx.destination);
-    this.GainNode1.gain.value = 0;
+    gainNode1 = ctx.createGain();
+    gainNode1.connect(ctx.destination);
+    gainNode1.gain.value = 0;
 
-    this.GainNode2 = ctx.createGain();
-    this.GainNode2.connect(ctx.destination);
-    this.GainNode2.gain.value = 0;
+    gainNode2 = ctx.createGain();
+    gainNode2.connect(ctx.destination);
+    gainNode2.gain.value = 0;
 
-    this.SourceNode1 = SourceNode1;
-    this.SourceNode1.connect(this.GainNode1);
-    this.SourceNode1.start(ctx.currentTime);
+    sourceNode1 = SourceNode1;
+    sourceNode1.connect(gainNode1);
+    sourceNode1.start(ctx.currentTime);
 
-    this.SourceNode2 = SourceNode2;
-    this.SourceNode2.connect(this.GainNode2);
-    this.SourceNode2.start(ctx.currentTime);
+    sourceNode2 = SourceNode2;
+    sourceNode2.connect(gainNode2);
+    sourceNode2.start(ctx.currentTime);
 
-    this.Dest = document.querySelector("#" + destId);
+    dest = document.querySelector("#" + destId);
 
     let JIDiv = document.createElement("div"),
         jiet_names = ["JI", "ET"],
@@ -108,12 +108,12 @@ function Interval(destId, ctx, baseFreq, duration, SourceNode1, SourceNode2) {
         }
     }
 
-    this.PlayButton = document.createElement("button");
-    this.PlayButton.setAttribute("type", "button");
-    this.PlayButton.classList.add("play_pause");
-    this.PlayButton.innerText = "Play"
-    this.PlayButton.addEventListener("click", () => {
-        this.PlaySample()
+    playButton = document.createElement("button");
+    playButton.setAttribute("type", "button");
+    playButton.classList.add("play_pause");
+    playButton.innerText = "Play"
+    playButton.addEventListener("click", () => {
+        playSample()
     });
 
     let dispDiv = document.createElement("div"),
@@ -125,7 +125,7 @@ function Interval(destId, ctx, baseFreq, duration, SourceNode1, SourceNode2) {
     p1Div.classList.add("disp");
     p2Div.classList.add("disp");
 
-    this.PlaySample = function() {
+    playSample = function() {
         // check if context is in suspended state (autoplay policy)
         if (ctx.state === "suspended") {
             ctx.resume();
@@ -159,36 +159,36 @@ function Interval(destId, ctx, baseFreq, duration, SourceNode1, SourceNode2) {
         }
         p1Div.innerText = baseFreq.toFixed(1).toString() + "Hz";
         p2Div.innerText = (i2*baseFreq).toFixed(1).toString() + "Hz";
-        this.SourceNode1.SetFreq(baseFreq);
-        this.SourceNode2.SetFreq(i2*baseFreq);
-        this.GainNode1.gain.value = 0.1; // Without this the sound seems to begin abruptly
+        sourceNode1.SetFreq(baseFreq);
+        sourceNode2.SetFreq(i2*baseFreq);
+        gainNode1.gain.value = 0.1; // Without this the sound seems to begin abruptly
         now = ctx.currentTime;
-        this.GainNode1.gain.linearRampToValueAtTime(1, now + 0.1*duration);
-        this.GainNode1.gain.linearRampToValueAtTime(0, now + 1.0*duration);
+        gainNode1.gain.linearRampToValueAtTime(1, now + 0.1*duration);
+        gainNode1.gain.linearRampToValueAtTime(0, now + 1.0*duration);
         setTimeout(() => {
-            this.GainNode2.gain.value = 0.1; // Without this the sound seems to begin abruptly
+            gainNode2.gain.value = 0.1; // Without this the sound seems to begin abruptly
             now = ctx.currentTime;
-            this.GainNode2.gain.linearRampToValueAtTime(1, now + 0.1*duration);
-            this.GainNode2.gain.linearRampToValueAtTime(0, now + 1.0*duration);
+            gainNode2.gain.linearRampToValueAtTime(1, now + 0.1*duration);
+            gainNode2.gain.linearRampToValueAtTime(0, now + 1.0*duration);
         }, t2*1000*duration)
     }
 
-    this.CompareButton = document.createElement("button");
-    this.CompareButton.setAttribute("type", "button");
-    this.CompareButton.classList.add("compare");
-    this.CompareButton.innerText = "Compare"
-    this.CompareButton.addEventListener("click", () => {
-        this.CompareSample()
+    compareButton = document.createElement("button");
+    compareButton.setAttribute("type", "button");
+    compareButton.classList.add("compare");
+    compareButton.innerText = "Compare"
+    compareButton.addEventListener("click", () => {
+        compareSample()
     });
 
-    this.CompareSample = function() {
+    compareSample = function() {
         // check if context is in suspended state (autoplay policy)
         if (ctx.state === "suspended") {
             ctx.resume();
         }
 
-        this.SourceNode1.SetFreq(baseFreq);
-        this.SourceNode2.SetFreq(baseFreq);
+        sourceNode1.SetFreq(baseFreq);
+        sourceNode2.SetFreq(baseFreq);
         let isel = interval_names.indexOf(document.querySelector(".interval_"+destId+":checked").value),
             i1 = interval_ratios[isel],
             i2 = 2**((isel+1)/12),
@@ -196,17 +196,17 @@ function Interval(destId, ctx, baseFreq, duration, SourceNode1, SourceNode2) {
         p1Div.innerText = (i1*baseFreq).toFixed(1).toString() + "Hz";
         p2Div.innerText = (i2*baseFreq).toFixed(1).toString() + "Hz";
 
-        this.SourceNode1.SetFreq(i1*baseFreq);
-        this.GainNode1.gain.value = 0.1;
+        sourceNode1.SetFreq(i1*baseFreq);
+        gainNode1.gain.value = 0.1;
         now = ctx.currentTime;
-        this.GainNode1.gain.linearRampToValueAtTime(1, now + 0.100*duration);
-        this.GainNode1.gain.linearRampToValueAtTime(0, now + 1.000*duration);
+        gainNode1.gain.linearRampToValueAtTime(1, now + 0.100*duration);
+        gainNode1.gain.linearRampToValueAtTime(0, now + 1.000*duration);
         setTimeout(() => {
-            this.GainNode2.gain.value = 0.0;
-            this.SourceNode2.SetFreq(i2*baseFreq);
+            gainNode2.gain.value = 0.0;
+            sourceNode2.SetFreq(i2*baseFreq);
             now = ctx.currentTime;
-            this.GainNode2.gain.linearRampToValueAtTime(1, now + 0.100*duration);
-            this.GainNode2.gain.linearRampToValueAtTime(0, now + 1.000*duration);
+            gainNode2.gain.linearRampToValueAtTime(1, now + 0.100*duration);
+            gainNode2.gain.linearRampToValueAtTime(0, now + 1.000*duration);
         }, 1000*duration)
     }
 
@@ -217,18 +217,18 @@ function Interval(destId, ctx, baseFreq, duration, SourceNode1, SourceNode2) {
         div4 = document.createElement("div"),
         div5 = document.createElement("div"),
         div6 = document.createElement("div");
-    this.Dest.appendChild(div1);
-    this.Dest.appendChild(div2);
-    this.Dest.appendChild(div3);
-    this.Dest.appendChild(div4);
-    this.Dest.appendChild(div5);
-    this.Dest.appendChild(div6);
+    dest.appendChild(div1);
+    dest.appendChild(div2);
+    dest.appendChild(div3);
+    dest.appendChild(div4);
+    dest.appendChild(div5);
+    dest.appendChild(div6);
     div1.appendChild(JIDiv)
     div1.appendChild(AscDiv)
     div2.appendChild(major_intervals)
     div3.appendChild(perfect_intervals)
     div4.appendChild(minor_intervals)
-    div5.appendChild(this.PlayButton);
+    div5.appendChild(playButton);
     div6.appendChild(dispDiv);
-    div5.appendChild(this.CompareButton);
+    div5.appendChild(compareButton);
 }
